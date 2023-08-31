@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.time.Period;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class ExamController {
@@ -33,6 +36,20 @@ public class ExamController {
         heroComponent.addHero(newHero);
         model.addAttribute("newHero", newHero);
         return "showHero";
+    }
+
+    @GetMapping("hero-list")
+    public String heroList(Model model){
+        Map<String,Integer> heroes =  heroComponent.getListOfHeroes().stream()
+                .filter(s->s.getDateOfbirth().getYear()>2000)
+                .collect(Collectors.toMap(
+                        Hero::getName,
+                        s-> Period.between(s.getDateOfbirth(),LocalDate.now()).getYears())
+                );
+
+        model.addAttribute("heroes", heroes);
+        return "heroes";
 
     }
+
 }
